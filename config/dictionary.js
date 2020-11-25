@@ -16,6 +16,8 @@ const messages = {
   alphaPass: "Password must be alphanumeric.",
   unauthorized: "Please login to access this module.",
   forbiden: "You have no access to this module.",
+  invalidCurrency:
+    "Invalid currency, please select one between USD, EUR and ARS.",
 };
 
 module.exports = {
