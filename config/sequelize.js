@@ -1,14 +1,26 @@
 require("dotenv").config();
 const Sequelize = require("sequelize");
+const configDb = require("./config");
+const environment = process.env.NODE_ENV;
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASS,
-  {
-    host: "localhost",
-    dialect: "postgres",
-  }
-);
+let sequelize;
+if (configDb[environment].use_env_variable) {
+  sequelize = new Sequelize(
+    process.env[configDb[environment].use_env_variable],
+    {
+      dialect: process.env.DB_DIALECT,
+    }
+  );
+} else {
+  sequelize = new Sequelize(
+    configDb[environment].database,
+    configDb[environment].username,
+    configDb[environment].password,
+    {
+      dialect: process.env.DB_DIALECT,
+      port: "5432",
+    }
+  );
+}
 
 module.exports = sequelize;
