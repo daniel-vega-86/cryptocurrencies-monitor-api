@@ -27,7 +27,7 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      preferedCurrency: {
+      prefered_currency: {
         type: DataTypes.ENUM,
         values: ["USD", "EUR", "ARS"],
         allowNull: false,

@@ -1,6 +1,8 @@
 const { DataTypes } = require("sequelize");
-const db = require("../../config/sequelize");
 const bcrypt = require("bcrypt");
+
+const db = require("../../config/sequelize");
+const { messages } = require("../../config/dictionary");
 
 const User = db.define(
   "User",
@@ -38,7 +40,6 @@ const User = db.define(
         args: true,
         msg: messages.usernameInUse,
       },
-      trim: true,
       allowNull: false,
       validate: {
         notEmpty: {
