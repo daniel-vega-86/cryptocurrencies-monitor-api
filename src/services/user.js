@@ -36,7 +36,13 @@ const login = ({ username, password }) => {
   });
 };
 
+const logout = async (token) => await Token.destroy({ where: { token } });
+
+const logoutAll = async (userId) => await Token.destroy({ where: { userId } });
+
 module.exports = {
   signUp,
   login,
+  logout,
+  logoutAll,
 };

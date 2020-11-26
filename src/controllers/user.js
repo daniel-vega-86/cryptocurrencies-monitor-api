@@ -1,4 +1,4 @@
-const { signUp, login } = require("../services/user");
+const { signUp, login, logout, logoutAll } = require("../services/user");
 const { codes, messages } = require("../../config/dictionary");
 
 const createUser = async (req, res) => {
@@ -22,7 +22,29 @@ const access = async (req, res) => {
   }
 };
 
+const closeSession = async (req, res) => {
+  const { token } = req;
+  try {
+    await logout(token);
+    res.status(codes.noContent).send();
+  } catch (e) {
+    res.send(codes.badRequest).send(e);
+  }
+};
+
+const closeAllSessions = async (req, res) => {
+  const { id } = req.user;
+  try {
+    await logoutAll(id);
+    res.status(codes.noContent).send();
+  } catch (e) {
+    res.status(codes.badRequest).send(e);
+  }
+};
+
 module.exports = {
   createUser,
   access,
+  closeSession,
+  closeAllSessions,
 };

@@ -26,7 +26,7 @@ describe("GET Cryptocoins", () => {
     done();
   });
 
-  test("Should get coins for unauthorized user", async (done) => {
+  test("Should get coins for authorized user", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
       password: "contrasena",
