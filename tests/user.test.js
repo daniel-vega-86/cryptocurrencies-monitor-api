@@ -96,3 +96,53 @@ describe("POST login user", () => {
     done();
   });
 });
+
+describe("POST logout user", () => {
+  test("Should fail for unautheticated user", async (done) => {
+    const response = await request(app)
+      .post("/users/logout")
+      .send()
+      .expect(codes.unauthorized);
+    expect(response.text).toContain(messages.unauthorized);
+    done();
+  });
+
+  test("Should logout for authorized user", async (done) => {
+    const newuser = await createUser();
+    const { body } = await request(app).post("/users/login").send({
+      username: newuser.dataValues.username,
+      password: "contrasena",
+    });
+    const response = await request(app)
+      .post("/users/logout")
+      .set("Authorization", body.token)
+      .send();
+    expect(response.status).toBe(codes.noContent);
+    done();
+  });
+});
+
+describe("POST logoutAll user'sessions", () => {
+  test("Should fail for unautheticated user", async (done) => {
+    const response = await request(app)
+      .post("/users/logoutAll")
+      .send()
+      .expect(codes.unauthorized);
+    expect(response.text).toContain(messages.unauthorized);
+    done();
+  });
+
+  test("Should logout for authorized user", async (done) => {
+    const newuser = await createUser();
+    const { body } = await request(app).post("/users/login").send({
+      username: newuser.dataValues.username,
+      password: "contrasena",
+    });
+    const response = await request(app)
+      .post("/users/logoutAll")
+      .set("Authorization", body.token)
+      .send();
+    expect(response.status).toBe(codes.noContent);
+    done();
+  });
+});

@@ -38,4 +38,19 @@ describe("GET Cryptocoins", () => {
     expect(response.status).toBe(codes.ok);
     done();
   });
+
+  test("Should not get coins for user with expired token", async (done) => {
+    const { body } = await request(app).post("/users/login").send({
+      username: user.dataValues.username,
+      password: "contrasena",
+    });
+    setTimeout(async () => {
+      const response = await request(app)
+        .get("/cryptocoins")
+        .set("Authorization", body.token)
+        .send();
+      expect(response.status).toBe(codes.unauthorized);
+      done();
+    }, 3000);
+  });
 });

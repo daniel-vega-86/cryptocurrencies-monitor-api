@@ -18,7 +18,10 @@ const login = ({ username, password }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await User.findByCredential(username, password);
-      const time = process.env.EXPIRATION_TIME || "30 second";
+      const time =
+        process.env.NODE_ENV === "test"
+          ? "2s"
+          : process.env.EXPIRATION_TIME || "30 seconds";
       const token = jwt.sign(
         { id: user.id.toString() },
         process.env.JWT_SECRET,
