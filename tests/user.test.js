@@ -6,6 +6,7 @@ const request = require("supertest");
 
 const app = require("../src/app");
 const User = require("../src/models/user");
+const Token = require("../src/models/token");
 const { buildUser, createUser } = require("./factory/user-factory");
 const { codes, messages } = require("../config/dictionary");
 
@@ -13,6 +14,7 @@ let user;
 
 beforeEach(async () => {
   await User.destroy({ truncate: true });
+  await Token.destroy({ truncate: true });
   user = await buildUser();
 });
 

@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
+const Token = require("../models/token");
 
 const signUp = (body) => {
   return new Promise(async (resolve, reject) => {
@@ -23,6 +24,7 @@ const login = ({ username, password }) => {
         process.env.JWT_SECRET,
         { expiresIn: time }
       );
+      await Token.create({ userId: user.id, token: token });
       resolve({
         user,
         token,
