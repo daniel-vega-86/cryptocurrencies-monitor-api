@@ -8,7 +8,6 @@ const app = require("../src/app");
 const User = require("../src/models/user");
 const { buildUser, createUser } = require("./factory/user-factory");
 const { codes, messages } = require("../config/dictionary");
-const { expect } = require("@jest/globals");
 
 let user;
 
