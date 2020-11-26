@@ -90,11 +90,11 @@ const User = db.define(
 User.findByCredential = async (username, password) => {
   const user = await User.findOne({ where: { username } });
   if (!user) {
-    throw new Error("User not found.");
+    throw new Error(messages.invalidUser);
   }
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
-    throw new Error("Unable to login.");
+    throw new Error(messages.invalidPass);
   }
   return user;
 };
