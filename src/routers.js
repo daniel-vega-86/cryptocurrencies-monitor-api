@@ -8,7 +8,7 @@ const {
   closeSession,
   closeAllSessions,
 } = require("./controllers/user");
-const { getCoins, assignCoins } = require("./controllers/coins");
+const { getCoins, assignCoins, userCoins } = require("./controllers/coins");
 const signUpSchema = require("./schemas/user-signup");
 const assignSchema = require("./schemas/coin-assign");
 
@@ -25,6 +25,7 @@ router.post(
   validatorBySchema(assignSchema),
   assignCoins
 );
+router.get("/cryptocoins/list", userCoins);
 
 router.post("/users/logout", closeSession);
 router.post("/users/logoutAll", closeAllSessions);
