@@ -1,5 +1,6 @@
 const api = require("../../config/axios");
 const Coin = require("../models/coins");
+const { messages } = require("../../config/dictionary");
 
 const listCoins = async (preferedCurrency) => {
   return new Promise(async (resolve, reject) => {
@@ -22,13 +23,13 @@ const selectCoins = async (user, coinId) => {
         where: { userId: user.id, coinId },
       });
       if (assigned) {
-        throw new Error("You had already assigned this cryptocurrency.");
+        throw new Error(messages.assignedCoin);
       }
       const { data: coin } = await api.get("/coins/markets", {
         params: { vs_currency: user.preferedCurrency, ids: coinId },
       });
       if (coin.length === 0) {
-        throw new Error("Cryptocurrencie not found.");
+        throw new Error(messages.invalidCoin);
       }
       const cryptoCoin = Coin.filterData(coin);
       await Coin.create({
