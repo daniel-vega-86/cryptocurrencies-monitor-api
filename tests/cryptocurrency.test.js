@@ -7,9 +7,9 @@ const request = require("supertest");
 const app = require("../src/app");
 const User = require("../src/models/user");
 const Token = require("../src/models/token");
-const Coin = require("../src/models/coins");
+const Cryptocurrency = require("../src/models/cryptocurrency");
 const { createUser } = require("./factory/user-factory");
-const { createCoin } = require("./factory/coin-factory");
+const { createCryptocurrency } = require("./factory/cryptocurrency-factory");
 const { codes, messages } = require("../config/dictionary");
 
 let user;
@@ -17,39 +17,39 @@ let user;
 beforeEach(async () => {
   await User.destroy({ truncate: true });
   await Token.destroy({ truncate: true });
-  await Coin.destroy({ truncate: true });
+  await Cryptocurrency.destroy({ truncate: true });
   user = await createUser();
 });
 
-describe("GET Cryptocoins", () => {
-  test("Should no get coins for unauthorized user", async (done) => {
-    const response = await request(app).get("/cryptocoins").send();
+describe("GET Cryptocurrencies", () => {
+  test("Should no get cryptocurrencies for unauthorized user", async (done) => {
+    const response = await request(app).get("/cryptocurrencies").send();
     expect(response.status).toBe(codes.unauthorized);
     expect(response.text).toContain(messages.unauthorized);
     done();
   });
 
-  test("Should get coins for authorized user", async (done) => {
+  test("Should get cryptocurrencies for authorized user", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
       password: "contrasena",
     });
     const response = await request(app)
-      .get("/cryptocoins")
+      .get("/cryptocurrencies")
       .set("Authorization", body.token)
       .send();
     expect(response.status).toBe(codes.ok);
     done();
   });
 
-  test("Should not get coins for user with expired token", async (done) => {
+  test("Should not get cryptocurrencies for user with expired token", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
       password: "contrasena",
     });
     setTimeout(async () => {
       const response = await request(app)
-        .get("/cryptocoins")
+        .get("/cryptocurrencies")
         .set("Authorization", body.token)
         .send();
       expect(response.status).toBe(codes.unauthorized);
@@ -58,9 +58,9 @@ describe("GET Cryptocoins", () => {
   });
 });
 
-describe("POST assign cryptocoin", () => {
+describe("POST assign cryptocurrencies", () => {
   test("Should fail for unauthorized user", async (done) => {
-    const response = await request(app).post("/cryptocoins/assign").send();
+    const response = await request(app).post("/cryptocurrencies/assign").send();
     expect(response.status).toBe(codes.unauthorized);
     expect(response.text).toContain(messages.unauthorized);
     done();
@@ -72,7 +72,7 @@ describe("POST assign cryptocoin", () => {
       password: "contrasena",
     });
     const response = await request(app)
-      .post("/cryptocoins/assign")
+      .post("/cryptocurrencies/assign")
       .set("Authorization", body.token)
       .send({
         id: "",
@@ -88,13 +88,13 @@ describe("POST assign cryptocoin", () => {
       password: "contrasena",
     });
     const response = await request(app)
-      .post("/cryptocoins/assign")
+      .post("/cryptocurrencies/assign")
       .set("Authorization", body.token)
       .send({
         id: "bircoin",
       });
     expect(response.status).toBe(codes.badRequest);
-    expect(response.text).toContain(messages.invalidCoin);
+    expect(response.text).toContain(messages.invalidCryptocurrency);
     done();
   });
 
@@ -103,15 +103,15 @@ describe("POST assign cryptocoin", () => {
       username: user.dataValues.username,
       password: "contrasena",
     });
-    await createCoin(user.dataValues.id, "bitcoin");
+    await createCryptocurrency(user.dataValues.id, "bitcoin");
     const response = await request(app)
-      .post("/cryptocoins/assign")
+      .post("/cryptocurrencies/assign")
       .set("Authorization", body.token)
       .send({
         id: "bitcoin",
       });
     expect(response.status).toBe(codes.badRequest);
-    expect(response.text).toContain(messages.assignedCoin);
+    expect(response.text).toContain(messages.assignedCryptocurrency);
     done();
   });
 
@@ -121,7 +121,7 @@ describe("POST assign cryptocoin", () => {
       password: "contrasena",
     });
     const response = await request(app)
-      .post("/cryptocoins/assign")
+      .post("/cryptocurrencies/assign")
       .set("Authorization", body.token)
       .send({
         id: "bitcoin",
@@ -134,7 +134,7 @@ describe("POST assign cryptocoin", () => {
 
 describe("GET user cryptocurrencies", () => {
   test("Should fail for unauthorized user", async (done) => {
-    const response = await request(app).get("/cryptocoins/list").send();
+    const response = await request(app).get("/cryptocurrencies/list").send();
     expect(response.status).toBe(codes.unauthorized);
     expect(response.text).toContain(messages.unauthorized);
     done();
@@ -145,10 +145,10 @@ describe("GET user cryptocurrencies", () => {
       username: user.dataValues.username,
       password: "contrasena",
     });
-    await createCoin(user.dataValues.id, "bitcoin");
-    await createCoin(user.dataValues.id, "ethernum");
+    await createCryptocurrency(user.dataValues.id, "bitcoin");
+    await createCryptocurrency(user.dataValues.id, "ethernum");
     const response = await request(app)
-      .get("/cryptocoins/list")
+      .get("/cryptocurrencies/list")
       .set("Authorization", body.token)
       .send();
     expect(response.status).toBe(codes.ok);
@@ -157,13 +157,13 @@ describe("GET user cryptocurrencies", () => {
     done();
   });
 
-  test("Should fail for excced top maximun", async (done) => {
+  test("Should fail for exceed top maximun", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
       password: "contrasena",
     });
     const response = await request(app)
-      .get("/cryptocoins/list")
+      .get("/cryptocurrencies/list")
       .query({ top: 26 })
       .set("Authorization", body.token)
       .send();

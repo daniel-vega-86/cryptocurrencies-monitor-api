@@ -8,9 +8,13 @@ const {
   closeSession,
   closeAllSessions,
 } = require("./controllers/user");
-const { getCoins, assignCoins, userCoins } = require("./controllers/coins");
+const {
+  getCryptocurrencies,
+  assignCryptocurrency,
+  userCryptocurrencies,
+} = require("./controllers/cryptocurrency");
 const signUpSchema = require("./schemas/user-signup");
-const assignSchema = require("./schemas/coin-assign");
+const assignSchema = require("./schemas/cryptocurrency-assign");
 
 const router = new express.Router();
 
@@ -19,13 +23,13 @@ router.post("/users/login", access);
 
 router.use(auth);
 
-router.get("/cryptocoins", getCoins);
+router.get("/cryptocurrencies", getCryptocurrencies);
 router.post(
-  "/cryptocoins/assign",
+  "/cryptocurrencies/assign",
   validatorBySchema(assignSchema),
-  assignCoins
+  assignCryptocurrency
 );
-router.get("/cryptocoins/list", userCoins);
+router.get("/cryptocurrencies/list", userCryptocurrencies);
 
 router.post("/users/logout", closeSession);
 router.post("/users/logoutAll", closeAllSessions);

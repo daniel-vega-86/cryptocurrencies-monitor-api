@@ -20,8 +20,8 @@ const messages = {
     "Invalid currency, please select one between USD, EUR and ARS.",
   invalidUser: "User not found.",
   invalidPass: "Unable to login.",
-  assignedCoin: "You had already assigned this cryptocurrency.",
-  invalidCoin: "Cryptocurrency not found.",
+  assignedCryptocurrency: "You had already assigned this cryptocurrency.",
+  invalidCryptocurrency: "Cryptocurrency not found.",
 };
 
 module.exports = {

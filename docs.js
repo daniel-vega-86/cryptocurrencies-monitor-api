@@ -26,7 +26,7 @@ module.exports = {
       name: "Users",
     },
     {
-      name: "Cryptocoins",
+      name: "Cryptocurrencies",
     },
   ],
   components: {
@@ -186,12 +186,12 @@ module.exports = {
         },
       },
     },
-    "/cryptocoins": {
+    "/cryptocurrencies": {
       get: {
         security: {
           bearerAuth: [],
         },
-        tags: ["Cryptocoins"],
+        tags: ["Cryptocurrencies"],
         description: "List All cryptocurrencies",
         responses: {
           200: {
@@ -213,12 +213,12 @@ module.exports = {
         },
       },
     },
-    "/cryptocoins/assign": {
+    "/cryptocurrencies/assign": {
       post: {
         security: {
           bearerAuth: [],
         },
-        tags: ["Cryptocoins"],
+        tags: ["Cryptocurrencies"],
         description: "Assign cryptocurrencies to the user",
         requestBody: {
           content: {
@@ -232,7 +232,7 @@ module.exports = {
         },
         responses: {
           200: {
-            description: "Cryptocurrency",
+            description: "Cryptocurrency assigned.",
           },
           401: {
             description: "Unauthorized user",
@@ -250,12 +250,12 @@ module.exports = {
         },
       },
     },
-    "/cryptocoins/list": {
+    "/cryptocurrencies/list": {
       get: {
         security: {
           bearerAuth: [],
         },
-        tags: ["Cryptocoins"],
+        tags: ["Cryptocurrencies"],
         description:
           "List cryptocurrencies assigned to the user order by price in the prefered currency",
         parameters: [
