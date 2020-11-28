@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const db = require("../../config/sequelize");
 const { messages } = require("../../config/dictionary");
@@ -96,6 +97,15 @@ User.findByCredential = async (username, password) => {
   if (!validPassword) {
     throw new Error(messages.invalidPass);
   }
+  return user;
+};
+
+User.findByToken = async (req) => {
+  const token = req.header("Authorization");
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const user = await User.findOne({
+    where: { id: decoded.id },
+  });
   return user;
 };
 

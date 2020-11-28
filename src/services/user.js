@@ -14,10 +14,10 @@ const signUp = (body) => {
 };
 
 const login = ({ username, password }) => {
-  const time = 20;
   return new Promise(async (resolve, reject) => {
     try {
       const user = await User.findByCredential(username, password);
+      const time = process.env.EXPIRATION_TIME || "30 second";
       const token = jwt.sign(
         { id: user.id.toString() },
         process.env.JWT_SECRET,
@@ -26,7 +26,7 @@ const login = ({ username, password }) => {
       resolve({
         user,
         token,
-        message: `Session expires in ${time} seconds`,
+        message: `Session expires in ${time}`,
       });
     } catch (e) {
       reject(e);
