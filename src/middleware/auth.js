@@ -3,11 +3,13 @@ const { codes, messages } = require("../../config/dictionary");
 
 const auth = async (req, res, next) => {
   try {
-    const user = await User.findByToken(req);
+    const token = req.header("Authorization");
+    const user = await User.findByToken(token);
     if (!user) {
       throw new Error();
     }
     req.user = user;
+    req.token = token;
     next();
   } catch (e) {
     res.status(codes.unauthorized).send({ error: messages.unauthorized });

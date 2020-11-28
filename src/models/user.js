@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const db = require("../../config/sequelize");
 const { messages } = require("../../config/dictionary");
+const Token = require("./token");
 
 const User = db.define(
   "User",
@@ -88,6 +89,18 @@ const User = db.define(
   }
 );
 
+User.associate = (models) => {
+  // User.hasMany(models.Album, {
+  //   onDelete: 'cascade',
+  //   foreingKey: 'userId',
+  // });
+
+  User.hasMany(models.Token, {
+    onDelete: "cascade",
+    foreingKey: "userId",
+  });
+};
+
 User.findByCredential = async (username, password) => {
   const user = await User.findOne({ where: { username } });
   if (!user) {
@@ -100,8 +113,13 @@ User.findByCredential = async (username, password) => {
   return user;
 };
 
-User.findByToken = async (req) => {
-  const token = req.header("Authorization");
+User.findByToken = async (token) => {
+  const activeToken = await Token.findOne({
+    where: { token },
+  });
+  if (!activeToken) {
+    return undefined;
+  }
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const user = await User.findOne({
     where: { id: decoded.id },

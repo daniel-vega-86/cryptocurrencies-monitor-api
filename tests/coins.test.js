@@ -6,6 +6,7 @@ const request = require("supertest");
 
 const app = require("../src/app");
 const User = require("../src/models/user");
+const Token = require("../src/models/token");
 const { createUser } = require("./factory/user-factory");
 const { codes, messages } = require("../config/dictionary");
 
@@ -13,6 +14,7 @@ let user;
 
 beforeEach(async () => {
   await User.destroy({ truncate: true });
+  await Token.destroy({ truncate: true });
   user = await createUser();
 });
 
@@ -24,7 +26,7 @@ describe("GET Cryptocoins", () => {
     done();
   });
 
-  test("Should get coins for unauthorized user", async (done) => {
+  test("Should get coins for authorized user", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
       password: "contrasena",
@@ -35,5 +37,20 @@ describe("GET Cryptocoins", () => {
       .send();
     expect(response.status).toBe(codes.ok);
     done();
+  });
+
+  test("Should not get coins for user with expired token", async (done) => {
+    const { body } = await request(app).post("/users/login").send({
+      username: user.dataValues.username,
+      password: "contrasena",
+    });
+    setTimeout(async () => {
+      const response = await request(app)
+        .get("/cryptocoins")
+        .set("Authorization", body.token)
+        .send();
+      expect(response.status).toBe(codes.unauthorized);
+      done();
+    }, 3000);
   });
 });

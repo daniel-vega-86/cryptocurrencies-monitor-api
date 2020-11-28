@@ -6,6 +6,7 @@ const request = require("supertest");
 
 const app = require("../src/app");
 const User = require("../src/models/user");
+const Token = require("../src/models/token");
 const { buildUser, createUser } = require("./factory/user-factory");
 const { codes, messages } = require("../config/dictionary");
 
@@ -13,6 +14,7 @@ let user;
 
 beforeEach(async () => {
   await User.destroy({ truncate: true });
+  await Token.destroy({ truncate: true });
   user = await buildUser();
 });
 
@@ -91,6 +93,56 @@ describe("POST login user", () => {
     });
     expect(response.status).toBe(codes.ok);
     expect(response.text).toContain("token");
+    done();
+  });
+});
+
+describe("POST logout user", () => {
+  test("Should fail for unautheticated user", async (done) => {
+    const response = await request(app)
+      .post("/users/logout")
+      .send()
+      .expect(codes.unauthorized);
+    expect(response.text).toContain(messages.unauthorized);
+    done();
+  });
+
+  test("Should logout for authorized user", async (done) => {
+    const newuser = await createUser();
+    const { body } = await request(app).post("/users/login").send({
+      username: newuser.dataValues.username,
+      password: "contrasena",
+    });
+    const response = await request(app)
+      .post("/users/logout")
+      .set("Authorization", body.token)
+      .send();
+    expect(response.status).toBe(codes.noContent);
+    done();
+  });
+});
+
+describe("POST logoutAll user'sessions", () => {
+  test("Should fail for unautheticated user", async (done) => {
+    const response = await request(app)
+      .post("/users/logoutAll")
+      .send()
+      .expect(codes.unauthorized);
+    expect(response.text).toContain(messages.unauthorized);
+    done();
+  });
+
+  test("Should logout for authorized user", async (done) => {
+    const newuser = await createUser();
+    const { body } = await request(app).post("/users/login").send({
+      username: newuser.dataValues.username,
+      password: "contrasena",
+    });
+    const response = await request(app)
+      .post("/users/logoutAll")
+      .set("Authorization", body.token)
+      .send();
+    expect(response.status).toBe(codes.noContent);
     done();
   });
 });
