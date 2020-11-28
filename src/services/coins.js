@@ -1,7 +1,6 @@
 const api = require("../../config/axios");
 const Coin = require("../models/coins");
 const { messages } = require("../../config/dictionary");
-const { resolve } = require("path");
 
 const listCoins = async (preferedCurrency) => {
   return new Promise(async (resolve, reject) => {
@@ -47,7 +46,10 @@ const selectCoins = async (user, coinId) => {
 const listUserCoins = (req) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { top = 2 } = req.query;
+      const { top = 10, order } = req.query;
+      if (top > 25) {
+        throw new Error("You can check a maximun of 25 crytocurrencies");
+      }
       const assignedCoins = await Coin.findAll({
         where: { userId: req.user.id },
       });
@@ -67,20 +69,13 @@ const listUserCoins = (req) => {
           ids: coinsId.toString(),
         },
       });
-      const cryptoCoins = [];
-      coinsMarket.forEach((coin) => {
-        cryptoCoins.push({
-          id: coin.id,
-          symbol: coin.symbol,
-          priceARS: prices[coin.id].ars,
-          priceUSD: prices[coin.id].usd,
-          priceEUR: prices[coin.id].eur,
-          name: coin.name,
-          image: coin.image,
-          lastUpdated: coin.last_updated,
-        });
-      });
-      resolve(cryptoCoins.slice(0, top));
+      const cryptoCoins = await Coin.filterTopCoins(prices, coinsMarket);
+      const orderedCoins = Coin.orderData(
+        cryptoCoins,
+        order,
+        req.user.preferedCurrency
+      );
+      resolve(orderedCoins.slice(0, top));
     } catch (e) {
       reject(e);
     }
