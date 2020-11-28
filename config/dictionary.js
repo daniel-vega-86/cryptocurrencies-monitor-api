@@ -18,6 +18,8 @@ const messages = {
   forbiden: "You have no access to this module.",
   invalidCurrency:
     "Invalid currency, please select one between USD, EUR and ARS.",
+  invalidUser: "User not found.",
+  invalidPass: "Unable to login.",
 };
 
 module.exports = {

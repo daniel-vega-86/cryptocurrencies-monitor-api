@@ -87,6 +87,18 @@ const User = db.define(
   }
 );
 
+User.findByCredential = async (username, password) => {
+  const user = await User.findOne({ where: { username } });
+  if (!user) {
+    throw new Error(messages.invalidUser);
+  }
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    throw new Error(messages.invalidPass);
+  }
+  return user;
+};
+
 User.beforeCreate(async (user, options) => {
   const hashedPassword = await bcrypt.hash(user.password, +process.env.SALT);
   user.password = hashedPassword;

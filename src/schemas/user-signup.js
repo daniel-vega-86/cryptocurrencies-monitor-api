@@ -1,4 +1,3 @@
-const { body } = require("express-validator");
 const { messages } = require("../../config/dictionary");
 const User = require("../models/user");
 
