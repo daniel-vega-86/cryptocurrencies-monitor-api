@@ -90,12 +90,12 @@ const User = db.define(
 );
 
 User.associate = (models) => {
-  // User.hasMany(models.Album, {
-  //   onDelete: 'cascade',
-  //   foreingKey: 'userId',
-  // });
-
   User.hasMany(models.Token, {
+    onDelete: "cascade",
+    foreingKey: "userId",
+  });
+
+  User.hasMany(models.Coin, {
     onDelete: "cascade",
     foreingKey: "userId",
   });
