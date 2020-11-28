@@ -3,7 +3,7 @@ const { codes, messages } = require("../../config/dictionary");
 
 const auth = async (req, res, next) => {
   try {
-    const token = req.header("Authorization");
+    const token = req.header("Authorization").replace("Bearer ", "");
     const user = await User.findByToken(token);
     if (!user) {
       throw new Error();
