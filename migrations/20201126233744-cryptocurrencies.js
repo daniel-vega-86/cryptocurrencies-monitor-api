@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("coins-user", {
+    await queryInterface.createTable("cryptocurrencies-user", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      coin_id: {
+      cryptocurrency_id: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -22,6 +22,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("coins-user");
+    await queryInterface.dropTable("cryptocurrencies-user");
   },
 };

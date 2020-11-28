@@ -1,10 +1,14 @@
 const { codes } = require("../../config/dictionary");
-const { listCoins, selectCoins, listUserCoins } = require("../services/coins");
+const {
+  listCryptocurrencies,
+  selectCryptocurrencies,
+  listUserCryptocurrencies,
+} = require("../services/cryptocurrency");
 
-const getCoins = async (req, res) => {
+const getCryptocurrencies = async (req, res) => {
   const { preferedCurrency } = req.user;
   try {
-    const data = await listCoins(preferedCurrency);
+    const data = await listCryptocurrencies(preferedCurrency);
     res.status(codes.ok).send(data);
   } catch (e) {
     res.status(codes.badRequest).send(e);
@@ -12,10 +16,10 @@ const getCoins = async (req, res) => {
   }
 };
 
-const assignCoins = async (req, res) => {
+const assignCryptocurrency = async (req, res) => {
   const { user, body } = req;
   try {
-    const coin = await selectCoins(user, body.id);
+    const coin = await selectCryptocurrencies(user, body.id);
     res.status(codes.ok).send(coin);
   } catch (e) {
     res.status(codes.badRequest).send({ error: e.message });
@@ -23,9 +27,9 @@ const assignCoins = async (req, res) => {
   }
 };
 
-const userCoins = async (req, res) => {
+const userCryptocurrencies = async (req, res) => {
   try {
-    const data = await listUserCoins(req);
+    const data = await listUserCryptocurrencies(req);
     res.status(codes.ok).send(data);
   } catch (e) {
     res.status(codes.badRequest).send({ error: e.message });
@@ -33,4 +37,8 @@ const userCoins = async (req, res) => {
   }
 };
 
-module.exports = { getCoins, assignCoins, userCoins };
+module.exports = {
+  getCryptocurrencies,
+  assignCryptocurrency,
+  userCryptocurrencies,
+};

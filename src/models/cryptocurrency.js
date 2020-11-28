@@ -1,9 +1,8 @@
 const { DataTypes } = require("sequelize");
 const db = require("../../config/sequelize");
-const api = require("../../config/axios");
 
-const Coin = db.define(
-  "Coin",
+const Cryptocurrency = db.define(
+  "Cryptocurrency",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -16,7 +15,7 @@ const Coin = db.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    coinId: {
+    cryptocurrencyId: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -24,15 +23,15 @@ const Coin = db.define(
   {
     timestamps: false,
     freezeTableName: true,
-    tableName: "coins-user",
+    tableName: "cryptocurrencies-user",
     underscored: true,
   }
 );
 
-Coin.filterData = (coins) => {
-  const cryptoCoins = [];
+Cryptocurrency.filterData = (coins) => {
+  const cryptocurrencies = [];
   coins.forEach((coin) => {
-    cryptoCoins.push({
+    cryptocurrencies.push({
       id: coin.id,
       symbol: coin.symbol,
       price: coin.current_price,
@@ -41,26 +40,26 @@ Coin.filterData = (coins) => {
       lastUpdated: coin.last_updated,
     });
   });
-  return cryptoCoins;
+  return cryptocurrencies;
 };
 
-Coin.orderData = (cryptoCoins, order, preferedCurrency) => {
+Cryptocurrency.orderData = (cryptocurrencies, order, preferedCurrency) => {
   if (order === "asc") {
-    cryptoCoins.sort(
+    cryptocurrencies.sort(
       (a, b) => a.prices[preferedCurrency] - b.prices[preferedCurrency]
     );
   } else {
-    cryptoCoins.sort(
+    cryptocurrencies.sort(
       (a, b) => b.prices[preferedCurrency] - a.prices[preferedCurrency]
     );
   }
-  return cryptoCoins;
+  return cryptocurrencies;
 };
 
-Coin.filterTopCoins = (prices, coinsMarket) => {
-  const cryptoCoins = [];
+Cryptocurrency.filterTopCoins = (prices, coinsMarket) => {
+  const cryptocurrencies = [];
   coinsMarket.forEach((coin) => {
-    cryptoCoins.push({
+    cryptocurrencies.push({
       id: coin.id,
       symbol: coin.symbol,
       prices: {
@@ -73,11 +72,11 @@ Coin.filterTopCoins = (prices, coinsMarket) => {
       lastUpdated: coin.last_updated,
     });
   });
-  return cryptoCoins;
+  return cryptocurrencies;
 };
 
-Coin.associate = (models) => {
-  Coin.belongsTo(models.User, {
+Cryptocurrency.associate = (models) => {
+  Cryptocurrency.belongsTo(models.User, {
     foreingKey: {
       userId,
       allowNull: false,
@@ -85,4 +84,4 @@ Coin.associate = (models) => {
   });
 };
 
-module.exports = Coin;
+module.exports = Cryptocurrency;
