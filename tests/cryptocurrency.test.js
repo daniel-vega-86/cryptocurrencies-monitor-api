@@ -172,3 +172,57 @@ describe("GET user cryptocurrencies", () => {
     done();
   });
 });
+
+describe("GET Cryptocurrency", () => {
+  test("Should no get cryptocurrency for unauthorized user", async (done) => {
+    const response = await request(app)
+      .get("/cryptocurrencies/list/bitcoin")
+      .send();
+    expect(response.status).toBe(codes.unauthorized);
+    expect(response.text).toContain(messages.unauthorized);
+    done();
+  });
+
+  test("Should not get unassigned cryptocurrency", async (done) => {
+    const { body } = await request(app).post("/users/login").send({
+      username: user.dataValues.username,
+      password: "contrasena",
+    });
+    const response = await request(app)
+      .get("/cryptocurrencies/list/bitcoin")
+      .set("Authorization", body.token)
+      .send();
+    expect(response.status).toBe(codes.badRequest);
+    done();
+  });
+
+  test("Should get cryptocurrency for authorized user", async (done) => {
+    const { body } = await request(app).post("/users/login").send({
+      username: user.dataValues.username,
+      password: "contrasena",
+    });
+    await createCryptocurrency(user.dataValues.id, "bitcoin");
+    const response = await request(app)
+      .get("/cryptocurrencies/list/bitcoin")
+      .set("Authorization", body.token)
+      .send();
+    expect(response.status).toBe(codes.ok);
+    done();
+  });
+});
+
+describe("DELETE assigned cryptocurrency", () => {
+  test("Should delete assigned cryptocurrency for authenticated user", async (done) => {
+    const { body } = await request(app).post("/users/login").send({
+      username: user.dataValues.username,
+      password: "contrasena",
+    });
+    await createCryptocurrency(user.dataValues.id, "bitcoin");
+    const response = await request(app)
+      .delete("/cryptocurrencies/assign/bitcoin")
+      .set("Authorization", body.token)
+      .send();
+    expect(response.status).toBe(codes.noContent);
+    done();
+  });
+});
