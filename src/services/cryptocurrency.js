@@ -116,9 +116,13 @@ const getCryptocurrency = (user, cryptocurrencyId) => {
   });
 };
 
+const deleteCryptocurrency = async (userId, cryptocurrencyId) =>
+  await Cryptocurrency.destroy({ where: { userId, cryptocurrencyId } });
+
 module.exports = {
   listCryptocurrencies,
   selectCryptocurrencies,
   listUserCryptocurrencies,
   userCryptocurrency,
+  deleteCryptocurrency,
 };

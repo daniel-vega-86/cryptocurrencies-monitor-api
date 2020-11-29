@@ -4,6 +4,7 @@ const {
   selectCryptocurrencies,
   listUserCryptocurrencies,
   userCryptocurrency,
+  deleteCryptocurrency,
 } = require("../services/cryptocurrency");
 
 const getCryptocurrencies = async (req, res) => {
@@ -50,9 +51,21 @@ const getUserCryptocurrency = async (req, res) => {
   }
 };
 
+const deleteAssignedCurrency = async (req, res) => {
+  const { id: userId } = req.user;
+  const { id: cryptocurrencyId } = req.params;
+  try {
+    await deleteCryptocurrency(userId, cryptocurrencyId);
+    res.status(codes.noContent).send();
+  } catch (e) {
+    res.send(codes.badRequest).send(e);
+  }
+};
+
 module.exports = {
   getCryptocurrencies,
   assignCryptocurrency,
   userCryptocurrencies,
   getUserCryptocurrency,
+  deleteAssignedCurrency,
 };
