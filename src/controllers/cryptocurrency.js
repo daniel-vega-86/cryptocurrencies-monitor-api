@@ -3,6 +3,7 @@ const {
   listCryptocurrencies,
   selectCryptocurrencies,
   listUserCryptocurrencies,
+  userCryptocurrency,
 } = require("../services/cryptocurrency");
 
 const getCryptocurrencies = async (req, res) => {
@@ -37,8 +38,21 @@ const userCryptocurrencies = async (req, res) => {
   }
 };
 
+const getUserCryptocurrency = async (req, res) => {
+  const { user } = req;
+  const { id } = req.params;
+  try {
+    const data = await userCryptocurrency(user, id);
+    res.status(codes.ok).send(data);
+  } catch (e) {
+    res.status(codes.badRequest).send({ error: e.message });
+    console.info("Error: ", e.message);
+  }
+};
+
 module.exports = {
   getCryptocurrencies,
   assignCryptocurrency,
   userCryptocurrencies,
+  getUserCryptocurrency,
 };

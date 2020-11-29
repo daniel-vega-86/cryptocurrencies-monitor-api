@@ -2,7 +2,7 @@ const api = require("../../config/axios");
 const Cryptocurrency = require("../models/cryptocurrency");
 const { messages } = require("../../config/dictionary");
 
-const listCryptocurrencies = async (preferedCurrency) => {
+const listCryptocurrencies = (preferedCurrency) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { data: coins } = await api.get("/coins/markets", {
@@ -16,7 +16,7 @@ const listCryptocurrencies = async (preferedCurrency) => {
   });
 };
 
-const selectCryptocurrencies = async (user, cryptocurrencyId) => {
+const selectCryptocurrencies = (user, cryptocurrencyId) => {
   return new Promise(async (resolve, reject) => {
     try {
       const assigned = await Cryptocurrency.findOne({
@@ -57,22 +57,9 @@ const listUserCryptocurrencies = (req) => {
       assignedCryptocurrencies.forEach((coin) => {
         cryptocurrenciesId.push(coin.dataValues.cryptocurrencyId);
       });
-
-      const { data: prices } = await api.get("/simple/price", {
-        params: {
-          ids: cryptocurrenciesId.toString(),
-          vs_currencies: "usd,eur,ars",
-        },
-      });
-      const { data: cryptocurrenciesData } = await api.get("/coins/markets", {
-        params: {
-          vs_currency: req.user.preferedCurrency,
-          ids: cryptocurrenciesId.toString(),
-        },
-      });
-      const cryptocurrencies = await Cryptocurrency.filterTopCoins(
-        prices,
-        cryptocurrenciesData
+      const cryptocurrencies = await getCryptocurrency(
+        req.user,
+        cryptocurrenciesId.toString()
       );
       const ordered = Cryptocurrency.orderData(
         cryptocurrencies,
@@ -86,8 +73,52 @@ const listUserCryptocurrencies = (req) => {
   });
 };
 
+const userCryptocurrency = (user, cryptocurrencyId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const assigned = await Cryptocurrency.findOne({
+        where: { userId: user.id, cryptocurrencyId },
+      });
+      if (!assigned) {
+        throw new Error(messages.unassignedCryptocurrency);
+      }
+      const cryptocurrency = await getCryptocurrency(user, cryptocurrencyId);
+      resolve(cryptocurrency);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const getCryptocurrency = (user, cryptocurrencyId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { data: prices } = await api.get("/simple/price", {
+        params: {
+          ids: cryptocurrencyId,
+          vs_currencies: "usd,eur,ars",
+        },
+      });
+      const { data: cryptocurrenciesData } = await api.get("/coins/markets", {
+        params: {
+          vs_currency: user.preferedCurrency,
+          ids: cryptocurrencyId,
+        },
+      });
+      const cryptocurrencies = await Cryptocurrency.filterCurrencies(
+        prices,
+        cryptocurrenciesData
+      );
+      resolve(cryptocurrencies);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   listCryptocurrencies,
   selectCryptocurrencies,
   listUserCryptocurrencies,
+  userCryptocurrency,
 };

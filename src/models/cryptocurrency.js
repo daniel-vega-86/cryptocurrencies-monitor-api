@@ -56,7 +56,7 @@ Cryptocurrency.orderData = (cryptocurrencies, order, preferedCurrency) => {
   return cryptocurrencies;
 };
 
-Cryptocurrency.filterTopCoins = (prices, coinsMarket) => {
+Cryptocurrency.filterCurrencies = (prices, coinsMarket) => {
   const cryptocurrencies = [];
   coinsMarket.forEach((coin) => {
     cryptocurrencies.push({

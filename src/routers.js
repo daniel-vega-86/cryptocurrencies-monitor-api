@@ -12,6 +12,7 @@ const {
   getCryptocurrencies,
   assignCryptocurrency,
   userCryptocurrencies,
+  getUserCryptocurrency,
 } = require("./controllers/cryptocurrency");
 const signUpSchema = require("./schemas/user-signup");
 const assignSchema = require("./schemas/cryptocurrency-assign");
@@ -30,6 +31,7 @@ router.post(
   assignCryptocurrency
 );
 router.get("/cryptocurrencies/list", userCryptocurrencies);
+router.get("/cryptocurrencies/list/:id", getUserCryptocurrency);
 
 router.post("/users/logout", closeSession);
 router.post("/users/logoutAll", closeAllSessions);
