@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const db = require("../../config/sequelize");
+const db = require("../config/sequelize");
 
 const Cryptocurrency = db.define(
   "Cryptocurrency",
@@ -76,12 +76,7 @@ Cryptocurrency.filterCurrencies = (prices, coinsMarket) => {
 };
 
 Cryptocurrency.associate = (models) => {
-  Cryptocurrency.belongsTo(models.User, {
-    foreingKey: {
-      userId,
-      allowNull: false,
-    },
-  });
+  Cryptocurrency.belongsTo(models.User);
 };
 
 module.exports = Cryptocurrency;

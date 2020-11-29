@@ -1,5 +1,5 @@
 const { messages } = require("../../config/dictionary");
-const User = require("../models/user");
+const User = require("../../models/user");
 
 const signUpSchema = {
   firstName: {

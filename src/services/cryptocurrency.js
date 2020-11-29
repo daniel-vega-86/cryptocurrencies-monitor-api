@@ -1,5 +1,5 @@
 const api = require("../../config/axios");
-const Cryptocurrency = require("../models/cryptocurrency");
+const Cryptocurrency = require("../../models/cryptocurrency");
 const { messages } = require("../../config/dictionary");
 
 const listCryptocurrencies = (preferedCurrency) => {

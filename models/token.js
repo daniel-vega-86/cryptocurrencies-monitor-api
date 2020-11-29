@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 
-const db = require("../../config/sequelize");
+const db = require("../config/sequelize");
+const User = require("./user");
 
 const Token = db.define(
   "Token",
@@ -30,11 +31,7 @@ const Token = db.define(
 );
 
 Token.associate = (models) => {
-  Token.belognsTo(models.User, {
-    foreingKey: {
-      allowNull: false,
-    },
-  });
+  Token.belongsTo(models.User);
 };
 
 module.exports = Token;

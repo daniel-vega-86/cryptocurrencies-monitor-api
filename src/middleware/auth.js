@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const User = require("../../models/user");
 const { codes, messages } = require("../../config/dictionary");
 
 const auth = async (req, res, next) => {
