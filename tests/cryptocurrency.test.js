@@ -5,19 +5,22 @@
 const request = require("supertest");
 
 const app = require("../src/app");
-const User = require("../src/models/user");
-const Token = require("../src/models/token");
-const Cryptocurrency = require("../src/models/cryptocurrency");
+const User = require("../models/user");
+const Token = require("../models/token");
+const Cryptocurrency = require("../models/cryptocurrency");
 const { createUser } = require("./factory/user-factory");
 const { createCryptocurrency } = require("./factory/cryptocurrency-factory");
 const { codes, messages } = require("../config/dictionary");
+const { expect } = require("@jest/globals");
 
 let user;
+const defaultPassword = "contrasena";
+const defaultCryptocurrency = "bitcoin";
 
 beforeEach(async () => {
-  await User.destroy({ truncate: true });
-  await Token.destroy({ truncate: true });
-  await Cryptocurrency.destroy({ truncate: true });
+  await User.destroy({ truncate: { cascade: true } });
+  await Token.destroy({ truncate: { cascade: true } });
+  await Cryptocurrency.destroy({ truncate: { cascade: true } });
   user = await createUser();
 });
 
@@ -32,11 +35,11 @@ describe("GET Cryptocurrencies", () => {
   test("Should get cryptocurrencies for authorized user", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     const response = await request(app)
       .get("/cryptocurrencies")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send();
     expect(response.status).toBe(codes.ok);
     done();
@@ -45,12 +48,12 @@ describe("GET Cryptocurrencies", () => {
   test("Should not get cryptocurrencies for user with expired token", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     setTimeout(async () => {
       const response = await request(app)
         .get("/cryptocurrencies")
-        .set("Authorization", body.token)
+        .set("Authorization", `Bearer ${body.token}`)
         .send();
       expect(response.status).toBe(codes.unauthorized);
       done();
@@ -69,11 +72,11 @@ describe("POST assign cryptocurrencies", () => {
   test("Should fail for empty value", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     const response = await request(app)
       .post("/cryptocurrencies/assign")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send({
         id: "",
       });
@@ -85,11 +88,11 @@ describe("POST assign cryptocurrencies", () => {
   test("Should fail for invalid value", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     const response = await request(app)
       .post("/cryptocurrencies/assign")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send({
         id: "bircoin",
       });
@@ -101,14 +104,14 @@ describe("POST assign cryptocurrencies", () => {
   test("Should fail for cryptocurrency already assigned", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     await createCryptocurrency(user.dataValues.id, "bitcoin");
     const response = await request(app)
       .post("/cryptocurrencies/assign")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send({
-        id: "bitcoin",
+        id: defaultCryptocurrency,
       });
     expect(response.status).toBe(codes.badRequest);
     expect(response.text).toContain(messages.assignedCryptocurrency);
@@ -118,16 +121,16 @@ describe("POST assign cryptocurrencies", () => {
   test("Should assign cryptocurrency for authorized user", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     const response = await request(app)
       .post("/cryptocurrencies/assign")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send({
-        id: "bitcoin",
+        id: defaultCryptocurrency,
       });
     expect(response.status).toBe(codes.ok);
-    expect(response.text).toContain("bitcoin");
+    expect(response.text).toContain(defaultCryptocurrency);
     done();
   });
 });
@@ -143,29 +146,44 @@ describe("GET user cryptocurrencies", () => {
   test("Should list cryptocurrency for authorized user", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     await createCryptocurrency(user.dataValues.id, "bitcoin");
     await createCryptocurrency(user.dataValues.id, "ethernum");
     const response = await request(app)
       .get("/cryptocurrencies/list")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send();
     expect(response.status).toBe(codes.ok);
-    expect(response.text).toContain("bitcoin");
+    expect(response.text).toContain(defaultCryptocurrency);
     expect(response.text).toContain("prices");
+    done();
+  });
+
+  test("Should fail for had not assigned any cryptcocurrency", async (done) => {
+    const { body } = await request(app).post("/users/login").send({
+      username: user.dataValues.username,
+      password: defaultPassword,
+    });
+    const response = await request(app)
+      .get("/cryptocurrencies/list")
+      .query({ top: 10 })
+      .set("Authorization", `Bearer ${body.token}`)
+      .send();
+    expect(response.status).toBe(codes.badRequest);
+    expect(response.text).toContain(messages.notAssignedCryptocurrencies);
     done();
   });
 
   test("Should fail for exceed top maximun", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     const response = await request(app)
       .get("/cryptocurrencies/list")
       .query({ top: 26 })
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send();
     expect(response.status).toBe(codes.badRequest);
     expect(response.text).toContain("maximun");
@@ -186,25 +204,25 @@ describe("GET Cryptocurrency", () => {
   test("Should not get unassigned cryptocurrency", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
     const response = await request(app)
       .get("/cryptocurrencies/list/bitcoin")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send();
-    expect(response.status).toBe(codes.badRequest);
+    expect(response.status).toBe(codes.notFound);
     done();
   });
 
   test("Should get cryptocurrency for authorized user", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
-    await createCryptocurrency(user.dataValues.id, "bitcoin");
+    await createCryptocurrency(user.dataValues.id, defaultCryptocurrency);
     const response = await request(app)
       .get("/cryptocurrencies/list/bitcoin")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send();
     expect(response.status).toBe(codes.ok);
     done();
@@ -212,15 +230,29 @@ describe("GET Cryptocurrency", () => {
 });
 
 describe("DELETE assigned cryptocurrency", () => {
+  test("Should not delete unassigned cryptocurrency for authenticated user", async (done) => {
+    const { body } = await request(app).post("/users/login").send({
+      username: user.dataValues.username,
+      password: defaultPassword,
+    });
+    const response = await request(app)
+      .delete("/cryptocurrencies/assign/bitcoin")
+      .set("Authorization", `Bearer ${body.token}`)
+      .send();
+    expect(response.status).toBe(codes.badRequest);
+    expect(response.text).toContain(messages.unassignedCryptocurrency);
+    done();
+  });
+
   test("Should delete assigned cryptocurrency for authenticated user", async (done) => {
     const { body } = await request(app).post("/users/login").send({
       username: user.dataValues.username,
-      password: "contrasena",
+      password: defaultPassword,
     });
-    await createCryptocurrency(user.dataValues.id, "bitcoin");
+    await createCryptocurrency(user.dataValues.id, defaultCryptocurrency);
     const response = await request(app)
       .delete("/cryptocurrencies/assign/bitcoin")
-      .set("Authorization", body.token)
+      .set("Authorization", `Bearer ${body.token}`)
       .send();
     expect(response.status).toBe(codes.noContent);
     done();
