@@ -6,7 +6,7 @@ const {
   modifyUser,
   deleteUser,
 } = require("../services/user");
-const { codes, messages } = require("../../config/dictionary");
+const { codes } = require("../../config/dictionary");
 
 const createUser = async (req, res) => {
   try {

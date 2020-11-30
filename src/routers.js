@@ -20,6 +20,7 @@ const {
 } = require("./controllers/cryptocurrency");
 const signUpSchema = require("./schemas/user-signup");
 const assignSchema = require("./schemas/cryptocurrency-assign");
+const modifyUserSchema = require("./schemas/modify-user");
 
 const router = new express.Router();
 
@@ -38,10 +39,10 @@ router.delete("/cryptocurrencies/assign/:id", deleteAssignedCurrency);
 router.get("/cryptocurrencies/list", userCryptocurrencies);
 router.get("/cryptocurrencies/list/:id", getUserCryptocurrency);
 
-router.post("/users/logout", closeSession);
-router.post("/users/logoutAll", closeAllSessions);
+router.delete("/users/logout", closeSession);
+router.delete("/users/logoutAll", closeAllSessions);
 router.get("/users/me", readProfile);
-router.patch("/users/me", modifyProfile);
+router.patch("/users/me", validatorBySchema(modifyUserSchema), modifyProfile);
 router.delete("/users/me", deleteProfile);
 
 module.exports = router;

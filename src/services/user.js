@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../../models/user");
 const Token = require("../../models/token");
-const { modifyProfile } = require("../controllers/user");
+const validateUpdate = require("../helpers/validateUpdate");
 
 const signUp = (body) => {
   return new Promise(async (resolve, reject) => {
@@ -47,7 +47,6 @@ const logoutAll = async (userId) => await Token.destroy({ where: { userId } });
 const modifyUser = ({ body, user }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const updates = Object.keys(body);
       const allowedUpdates = [
         "firstName",
         "lastName",
@@ -55,17 +54,11 @@ const modifyUser = ({ body, user }) => {
         "password",
         "preferedCurrency",
       ];
-      const isValidOperation = updates.every((update) =>
-        allowedUpdates.includes(update)
-      );
-      if (!isValidOperation) {
-        throw new Error("Invalid updates.");
-      }
-
+      validateUpdate(body, allowedUpdates);
       await user.update(body);
-
       resolve(user);
     } catch (e) {
+      console.log(e);
       reject(e);
     }
   });

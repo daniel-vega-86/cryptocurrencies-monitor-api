@@ -8,7 +8,7 @@ const listCryptocurrencies = (preferedCurrency) => {
       const { data: coins } = await api.get("/coins/markets", {
         params: { vs_currency: preferedCurrency },
       });
-      const cryptocurrencies = Cryptocurrency.filterData(coins);
+      const cryptocurrencies = Cryptocurrency.cleanData(coins);
       resolve(cryptocurrencies);
     } catch (e) {
       reject(e);
@@ -31,7 +31,7 @@ const selectCryptocurrencies = (user, cryptocurrencyId) => {
       if (coin.length === 0) {
         throw new Error(messages.invalidCryptocurrency);
       }
-      const cryptocurrency = Cryptocurrency.filterData(coin);
+      const cryptocurrency = Cryptocurrency.cleanData(coin);
       await Cryptocurrency.create({
         userId: user.id,
         cryptocurrencyId,
@@ -43,28 +43,30 @@ const selectCryptocurrencies = (user, cryptocurrencyId) => {
   });
 };
 
-const listUserCryptocurrencies = (req) => {
+const listUserCryptocurrencies = ({ user, query }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { top = 10, order } = req.query;
+      const { top = 10, order } = query;
       if (top > 25) {
-        throw new Error("You can check a maximun of 25 crytocurrencies");
+        throw new Error(messages.topMaximun);
       }
       const assignedCryptocurrencies = await Cryptocurrency.findAll({
-        where: { userId: req.user.id },
+        where: { userId: user.id },
       });
-      const cryptocurrenciesId = [];
-      assignedCryptocurrencies.forEach((coin) => {
-        cryptocurrenciesId.push(coin.dataValues.cryptocurrencyId);
-      });
+      if (assignedCryptocurrencies.length === 0) {
+        throw new Error(messages.notAssignedCryptocurrencies);
+      }
+      cryptocurrenciesId = assignedCryptocurrencies.map(
+        (coin) => coin.dataValues.cryptocurrencyId
+      );
       const cryptocurrencies = await getCryptocurrency(
-        req.user,
+        user,
         cryptocurrenciesId.toString()
       );
       const ordered = Cryptocurrency.orderData(
         cryptocurrencies,
         order,
-        req.user.preferedCurrency
+        user.preferedCurrency
       );
       resolve(ordered.slice(0, top));
     } catch (e) {
@@ -105,7 +107,7 @@ const getCryptocurrency = (user, cryptocurrencyId) => {
           ids: cryptocurrencyId,
         },
       });
-      const cryptocurrencies = await Cryptocurrency.filterCurrencies(
+      const cryptocurrencies = await Cryptocurrency.cleanCurrencies(
         prices,
         cryptocurrenciesData
       );
@@ -116,8 +118,15 @@ const getCryptocurrency = (user, cryptocurrencyId) => {
   });
 };
 
-const deleteCryptocurrency = async (userId, cryptocurrencyId) =>
+const deleteCryptocurrency = async (userId, cryptocurrencyId) => {
+  const assigned = await Cryptocurrency.findOne({
+    where: { userId, cryptocurrencyId },
+  });
+  if (!assigned) {
+    throw new Error(messages.unassignedCryptocurrency);
+  }
   await Cryptocurrency.destroy({ where: { userId, cryptocurrencyId } });
+};
 
 module.exports = {
   listCryptocurrencies,

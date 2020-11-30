@@ -3,7 +3,9 @@ const factory = require("factory-girl").factory;
 
 const User = require("../../src/models/user");
 
-factory.define("user", User, {
+const model = "user";
+
+factory.define(model, User, {
   id: factory.sequence("user.id", (n) => n),
   firstName: faker.name.firstName(),
   lastName: faker.name.lastName(),
@@ -14,9 +16,9 @@ factory.define("user", User, {
   ),
 });
 
-const buildUser = () => factory.build("user");
+const buildUser = () => factory.build(model);
 
-const createUser = () => factory.create("user");
+const createUser = () => factory.create(model);
 
 module.exports = {
   buildUser,

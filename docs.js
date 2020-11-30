@@ -1,3 +1,5 @@
+const { messages } = require("./config/dictionary");
+
 module.exports = {
   openapi: "3.0.1",
   info: {
@@ -109,7 +111,7 @@ module.exports = {
         properties: {
           message: {
             type: "string",
-            example: "Invalid Email.",
+            example: messages.usernameInUse,
           },
         },
       },
@@ -120,7 +122,6 @@ module.exports = {
       post: {
         tags: ["Users"],
         description: "Create users",
-        operationId: "createUsers",
         requestBody: {
           content: {
             "application/json": {
@@ -141,9 +142,6 @@ module.exports = {
               "application/json": {
                 schema: {
                   $ref: "#/components/schemas/Error",
-                },
-                example: {
-                  message: "Username in use",
                 },
               },
             },
@@ -177,7 +175,182 @@ module.exports = {
                   $ref: "#/components/schemas/Error",
                 },
                 example: {
-                  message: "user not found",
+                  message: messages.invalidUser,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/users/me": {
+      get: {
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        tags: ["Users"],
+        description: "Read user profile",
+        responses: {
+          200: {
+            description: "User profile info",
+          },
+          401: {
+            description: "Unauthorized user",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+                example: {
+                  message: messages.unauthorized,
+                },
+              },
+            },
+          },
+        },
+      },
+      patch: {
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        tags: ["Users"],
+        description: "Modify one or all properties of user profile",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                properties: {
+                  username: { type: "string", example: "Andres" },
+                },
+              },
+            },
+          },
+          required: true,
+        },
+        responses: {
+          200: {
+            description: "User modified profile info",
+          },
+          401: {
+            description: "Unauthorized user",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+                example: {
+                  message: messages.unauthorized,
+                },
+              },
+            },
+          },
+          400: {
+            description: "Bad request",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+                example: {
+                  message: "Invalid update.",
+                },
+              },
+            },
+          },
+        },
+      },
+      delete: {
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        tags: ["Users"],
+        description: "Delete user profile.",
+        responses: {
+          204: {
+            description: "User profile deleted sucessfully.",
+          },
+          400: {
+            description: "Bad request",
+          },
+          401: {
+            description: "Unauthorized user",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+                example: {
+                  message: messages.unauthorized,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/users/logout": {
+      delete: {
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        tags: ["Users"],
+        description: "Close actual user session.",
+        responses: {
+          204: {
+            description: "Session closed sucessfully.",
+          },
+          400: {
+            description: "Bad request",
+          },
+          401: {
+            description: "Unauthorized user",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+                example: {
+                  message: messages.unauthorized,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/users/logoutAll": {
+      delete: {
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        tags: ["Users"],
+        description: "Close all user sessions.",
+        responses: {
+          204: {
+            description: "Sessions closed sucessfully.",
+          },
+          400: {
+            description: "Bad request",
+          },
+          401: {
+            description: "Unauthorized user",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+                example: {
+                  message: messages.unauthorized,
                 },
               },
             },
@@ -198,6 +371,9 @@ module.exports = {
           200: {
             description: "Cryptocurrencies",
           },
+          400: {
+            description: "Bad request",
+          },
           401: {
             description: "Unauthorized user",
             content: {
@@ -206,7 +382,7 @@ module.exports = {
                   $ref: "#/components/schemas/Error",
                 },
                 example: {
-                  message: "Please login",
+                  message: messages.unauthorized,
                 },
               },
             },
@@ -237,6 +413,9 @@ module.exports = {
           200: {
             description: "Cryptocurrency assigned.",
           },
+          400: {
+            description: "Bad request",
+          },
           401: {
             description: "Unauthorized user",
             content: {
@@ -245,7 +424,7 @@ module.exports = {
                   $ref: "#/components/schemas/Error",
                 },
                 example: {
-                  message: "Please login",
+                  message: messages.unauthorized,
                 },
               },
             },
@@ -290,6 +469,9 @@ module.exports = {
           200: {
             description: "Cryptocurrencies",
           },
+          400: {
+            description: "Bad request",
+          },
           401: {
             description: "Unauthorized user",
             content: {
@@ -298,7 +480,7 @@ module.exports = {
                   $ref: "#/components/schemas/Error",
                 },
                 example: {
-                  message: "Please login",
+                  message: messages.unauthorized,
                 },
               },
             },
@@ -330,8 +512,8 @@ module.exports = {
           200: {
             description: "Cryptocurrency",
           },
-          400: {
-            description: "Bad request",
+          404: {
+            description: "Cryptocurrency not found",
           },
           401: {
             description: "Unauthorized user",

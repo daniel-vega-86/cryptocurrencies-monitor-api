@@ -22,6 +22,7 @@ describe("POST new user", () => {
   test("Should sing up a new user", async (done) => {
     const response = await request(app).post("/users").send(user.dataValues);
     expect(response.status).toBe(codes.created);
+    expecte().toBeThu;
     done();
   });
 

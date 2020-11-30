@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const api = axios.create({
-  baseURL: "https://api.coingecko.com/api/v3/",
+  baseURL: process.env.BASE_URL,
   timeout: 3000,
   headers: { "Content-Type": "application/json" },
 });
