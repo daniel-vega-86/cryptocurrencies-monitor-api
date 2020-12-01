@@ -155,7 +155,6 @@ module.exports = {
       post: {
         tags: ["Users"],
         description: "Login user",
-        operationId: "loginUsers",
         requestBody: {
           content: {
             "application/json": {
@@ -188,9 +187,11 @@ module.exports = {
     },
     "/cryptocurrencies": {
       get: {
-        security: {
-          bearerAuth: [],
-        },
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
         tags: ["Cryptocurrencies"],
         description: "List All cryptocurrencies",
         responses: {
@@ -215,9 +216,11 @@ module.exports = {
     },
     "/cryptocurrencies/assign": {
       post: {
-        security: {
-          bearerAuth: [],
-        },
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
         tags: ["Cryptocurrencies"],
         description: "Assign cryptocurrencies to the user",
         requestBody: {
@@ -252,9 +255,11 @@ module.exports = {
     },
     "/cryptocurrencies/list": {
       get: {
-        security: {
-          bearerAuth: [],
-        },
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
         tags: ["Cryptocurrencies"],
         description:
           "List cryptocurrencies assigned to the user order by price in the prefered currency",
