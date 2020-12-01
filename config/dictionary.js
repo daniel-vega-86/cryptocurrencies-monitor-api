@@ -20,6 +20,7 @@ const messages = {
     "Invalid currency, please select one between USD, EUR and ARS.",
   invalidUser: "User not found.",
   invalidPass: "Unable to login.",
+  unassignedCryptocurrency: "You have not yet assigned this cryptocurrency.",
   assignedCryptocurrency: "You had already assigned this cryptocurrency.",
   invalidCryptocurrency: "Cryptocurrency not found.",
 };

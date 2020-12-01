@@ -12,6 +12,8 @@ const {
   getCryptocurrencies,
   assignCryptocurrency,
   userCryptocurrencies,
+  getUserCryptocurrency,
+  deleteAssignedCurrency,
 } = require("./controllers/cryptocurrency");
 const signUpSchema = require("./schemas/user-signup");
 const assignSchema = require("./schemas/cryptocurrency-assign");
@@ -29,7 +31,9 @@ router.post(
   validatorBySchema(assignSchema),
   assignCryptocurrency
 );
+router.delete("/cryptocurrencies/assign/:id", deleteAssignedCurrency);
 router.get("/cryptocurrencies/list", userCryptocurrencies);
+router.get("/cryptocurrencies/list/:id", getUserCryptocurrency);
 
 router.post("/users/logout", closeSession);
 router.post("/users/logoutAll", closeAllSessions);

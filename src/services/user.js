@@ -29,7 +29,7 @@ const login = ({ username, password }) => {
       );
       await Token.create({ userId: user.id, token: token });
       resolve({
-        user,
+        user: user.username,
         token,
         message: `Session expires in ${time}`,
       });

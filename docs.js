@@ -306,5 +306,91 @@ module.exports = {
         },
       },
     },
+    "/cryptocurrencies/list/{id}": {
+      get: {
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        tags: ["Cryptocurrencies"],
+        description: "Get a specific cryptocurrency assigned to the user",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            schema: {
+              type: "string",
+              description: "Currency id string",
+            },
+            required: true,
+          },
+        ],
+        responses: {
+          200: {
+            description: "Cryptocurrency",
+          },
+          400: {
+            description: "Bad request",
+          },
+          401: {
+            description: "Unauthorized user",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+                example: {
+                  message: "Please login",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/cryptocurrencies/assign/{id}": {
+      delete: {
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        tags: ["Cryptocurrencies"],
+        description: "Delete a specific cryptocurrency assigned to the user",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            schema: {
+              type: "string",
+              description: "Currency id string",
+            },
+            required: true,
+          },
+        ],
+        responses: {
+          204: {
+            description: "Cryptocurrency delete.",
+          },
+          400: {
+            description: "Bad request",
+          },
+          401: {
+            description: "Unauthorized user",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Error",
+                },
+                example: {
+                  message: "Please login",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
