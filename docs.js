@@ -19,6 +19,10 @@ module.exports = {
   },
   servers: [
     {
+      url: `https://dv-cryptocurrencies-monitor.herokuapp.com/`,
+      description: "Production server",
+    },
+    {
       url: `http://localhost:${process.env.PORT}/`,
       description: "Local server",
     },
