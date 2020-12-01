@@ -7,6 +7,9 @@ const {
   access,
   closeSession,
   closeAllSessions,
+  readProfile,
+  modifyProfile,
+  deleteProfile,
 } = require("./controllers/user");
 const {
   getCryptocurrencies,
@@ -37,5 +40,8 @@ router.get("/cryptocurrencies/list/:id", getUserCryptocurrency);
 
 router.post("/users/logout", closeSession);
 router.post("/users/logoutAll", closeAllSessions);
+router.get("/users/me", readProfile);
+router.patch("/users/me", modifyProfile);
+router.delete("/users/me", deleteProfile);
 
 module.exports = router;

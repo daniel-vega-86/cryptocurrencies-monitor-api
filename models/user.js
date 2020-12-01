@@ -2,9 +2,10 @@ const { DataTypes } = require("sequelize");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const db = require("../../config/sequelize");
-const { messages } = require("../../config/dictionary");
+const db = require("../config/sequelize");
+const { messages } = require("../config/dictionary");
 const Token = require("./token");
+const Cryptocurrency = require("./cryptocurrency");
 
 const User = db.define(
   "User",
@@ -91,13 +92,13 @@ const User = db.define(
 
 User.associate = (models) => {
   User.hasMany(models.Token, {
-    onDelete: "cascade",
-    foreingKey: "userId",
+    foreignKey: "userId",
+    onDelete: "CASCADE",
   });
 
-  User.hasMany(models.Coin, {
+  User.hasMany(models.Cryptocurrency, {
+    foreignKey: "userId",
     onDelete: "cascade",
-    foreingKey: "userId",
   });
 };
 
@@ -127,9 +128,13 @@ User.findByToken = async (token) => {
   return user;
 };
 
-User.beforeCreate(async (user, options) => {
-  const hashedPassword = await bcrypt.hash(user.password, +process.env.SALT);
-  user.password = hashedPassword;
-});
+const encryptPasswordIfChanged = async (user, options) => {
+  if (user.changed("password")) {
+    user.password = await bcrypt.hash(user.password, +process.env.SALT);
+  }
+};
+
+User.beforeCreate(encryptPasswordIfChanged);
+User.beforeUpdate(encryptPasswordIfChanged);
 
 module.exports = User;
