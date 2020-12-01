@@ -65,7 +65,7 @@ En la raiz de la API cree un archivo llamado ".env" y en el establezca las sigui
 PORT=3000
 DB_NAME= (nombre de la base de datos creada para el desarrollo)
 DB_NAMETEST= (nombre de la base de datos creada para pruebas)
-DB_USER= (Usuario establecido enla base de datos)
+DB_USER= (Usuario establecido en la base de datos)
 DB_PASS= (Contraseña usada en la base de datos)
 DB_HOST=127.0.0.1
 DB_DIALECT=postgres
@@ -80,7 +80,7 @@ BASE_URL=https://api.coingecko.com/api/v3/
 
 ## Correr Migraciones
 
-Es necesario correr migraciones para crear las bases de datos, para esto ejecute los siguientes codigos:
+Es necesario correr migraciones para crear las tablas en las bases de datos, para esto ejecute los siguientes codigos:
 
 - Base de datos para desarrollo
 
@@ -119,6 +119,6 @@ npm test
 ## Construido con
 
 - [NodeJS](https://nodejs.org/es/)
-- [Express](https://expressjs.com/)
+- [ExpressJS](https://expressjs.com/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Sequelize](https://sequelize.org/)
