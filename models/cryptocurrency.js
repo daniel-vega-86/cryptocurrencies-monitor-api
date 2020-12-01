@@ -28,52 +28,37 @@ const Cryptocurrency = db.define(
   }
 );
 
-Cryptocurrency.filterData = (coins) => {
-  const cryptocurrencies = [];
-  coins.forEach((coin) => {
-    cryptocurrencies.push({
-      id: coin.id,
-      symbol: coin.symbol,
-      price: coin.current_price,
-      name: coin.name,
-      image: coin.image,
-      lastUpdated: coin.last_updated,
-    });
-  });
-  return cryptocurrencies;
-};
+Cryptocurrency.cleanData = (coins) =>
+  coins.map((coin) => ({
+    id: coin.id,
+    symbol: coin.symbol,
+    price: coin.current_price,
+    name: coin.name,
+    image: coin.image,
+    lastUpdated: coin.last_updated,
+  }));
 
 Cryptocurrency.orderData = (cryptocurrencies, order, preferedCurrency) => {
-  if (order === "asc") {
-    cryptocurrencies.sort(
-      (a, b) => a.prices[preferedCurrency] - b.prices[preferedCurrency]
-    );
-  } else {
-    cryptocurrencies.sort(
-      (a, b) => b.prices[preferedCurrency] - a.prices[preferedCurrency]
-    );
-  }
-  return cryptocurrencies;
+  return cryptocurrencies.sort((a, b) => {
+    if (order === "asc")
+      return a.prices[preferedCurrency] - b.prices[preferedCurrency];
+    return b.prices[preferedCurrency] - a.prices[preferedCurrency];
+  });
 };
 
-Cryptocurrency.filterCurrencies = (prices, coinsMarket) => {
-  const cryptocurrencies = [];
-  coinsMarket.forEach((coin) => {
-    cryptocurrencies.push({
-      id: coin.id,
-      symbol: coin.symbol,
-      prices: {
-        ARS: prices[coin.id].ars,
-        USD: prices[coin.id].usd,
-        EUR: prices[coin.id].eur,
-      },
-      name: coin.name,
-      image: coin.image,
-      lastUpdated: coin.last_updated,
-    });
-  });
-  return cryptocurrencies;
-};
+Cryptocurrency.cleanCurrencies = (prices, coinsMarket) =>
+  coinsMarket.map((coin) => ({
+    id: coin.id,
+    symbol: coin.symbol,
+    prices: {
+      ARS: prices[coin.id].ars,
+      USD: prices[coin.id].usd,
+      EUR: prices[coin.id].eur,
+    },
+    name: coin.name,
+    image: coin.image,
+    lastUpdated: coin.last_updated,
+  }));
 
 Cryptocurrency.associate = (models) => {
   Cryptocurrency.belongsTo(models.User);

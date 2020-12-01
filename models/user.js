@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const db = require("../config/sequelize");
 const { messages } = require("../config/dictionary");
 const Token = require("./token");
-const Cryptocurrency = require("./cryptocurrency");
+// const Cryptocurrency = require("./cryptocurrency");
 
 const User = db.define(
   "User",
@@ -58,10 +58,6 @@ const User = db.define(
         notEmpty: {
           args: true,
           msg: messages.emptyField("Password"),
-        },
-        isAlphanumeric: {
-          args: true,
-          msg: messages.alphaPass,
         },
         len: {
           args: [8],

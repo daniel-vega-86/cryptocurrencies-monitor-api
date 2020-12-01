@@ -46,7 +46,7 @@ const getUserCryptocurrency = async (req, res) => {
     const data = await userCryptocurrency(user, id);
     res.status(codes.ok).send(data);
   } catch (e) {
-    res.status(codes.badRequest).send({ error: e.message });
+    res.status(codes.notFound).send({ error: e.message });
     console.info("Error: ", e.message);
   }
 };
@@ -58,7 +58,8 @@ const deleteAssignedCurrency = async (req, res) => {
     await deleteCryptocurrency(userId, cryptocurrencyId);
     res.status(codes.noContent).send();
   } catch (e) {
-    res.send(codes.badRequest).send(e);
+    res.status(codes.badRequest).send({ error: e.message });
+    console.info("Error: ", e.message);
   }
 };
 

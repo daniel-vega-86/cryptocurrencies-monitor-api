@@ -23,6 +23,9 @@ const messages = {
   unassignedCryptocurrency: "You have not yet assigned this cryptocurrency.",
   assignedCryptocurrency: "You had already assigned this cryptocurrency.",
   invalidCryptocurrency: "Cryptocurrency not found.",
+  topMaximun: "You can check a maximun of 25 crytocurrencies.",
+  notAssignedCryptocurrencies:
+    "You don't have any cryptocurrency assigned yet.",
 };
 
 module.exports = {
